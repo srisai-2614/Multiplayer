@@ -1,0 +1,300 @@
+@import url("https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@100;200;300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined");
+
+
+
+:root {
+    --board-bg-color: #353436;
+    --square-size-desktop: 100px;
+    --square-size-mobile: 80px;
+    --square-bg-color: #f2ffa7;
+    --square-winner-bg-color: #9cf29f;
+}
+.Computer{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-items: center;
+    flex-wrap: wrap;
+    background-color: #040D12;
+}
+.ScoreIndicator{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: "Saira Condensed", sans-serif;
+}
+
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(3, var(--square-size-desktop));
+    grid-gap: 10px;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(28px, 7vw, 46px);
+    background-color:#000;
+    color: #000000;
+    border: 1px solid #ffffff;
+    width: var(--square-size-desktop);
+    height: var(--square-size-desktop);
+    text-shadow: 1px 1px 1px #e1cece;
+    transition: background-color 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.square:nth-child(2) {
+    margin: 10px 0;
+}
+
+.square:hover:not(.winner):not(.clicked) {
+    background-color: #ffffff;
+}
+
+.clicked {
+    box-shadow: 2px 2px 5px #484848 inset;
+    background-color: #232D3F;
+    cursor: default;
+    transition: 0.3s;
+    color: #fff;
+}
+
+.status {
+    margin: 20px 0;
+    font-family: "Saira Condensed", sans-serif;
+    font-size: clamp(18px, 6vw, 28px);
+    font-weight: 600;
+
+}
+
+.winner {
+    background-color: #fff;
+    color: #183D3D;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+    z-index: 1;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 #B46060;
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+
+.win-count {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: -5px;
+    width: 100%;
+    max-width: 360px;
+    font-family: "Saira Condensed", sans-serif;
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0px 1px 1px #333;
+    z-index: 1;
+}
+
+.win-count li:not(:nth-child(2)) {
+    transform: translateY(10px);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.player-active::before, .computer-active::before {
+    font-family: 'Material Symbols Outlined';
+    position: absolute;
+    top: 45%;
+    padding: 1px 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: normal;
+    z-index: -1;
+    color: #fff;
+}
+
+.player-active::before {
+    content: "swipe_left";
+    right: 0;
+    transform: translate(100%, -40%);
+    animation: moveLeft 1s infinite alternate;
+}
+
+.computer-active::before {
+    content: "swipe_right";
+    left: 0;
+    transform: translate(-100%, -50%);
+    animation: moveRight 1s infinite alternate;
+}
+
+@keyframes moveLeft {
+    0% {
+        opacity: .2;
+        transform: translate(100%, -50%);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(85%, -50%);
+    }
+}
+
+@keyframes moveRight {
+    0% {
+        opacity: 0.2;
+        transform: translate(-100%, -50%);
+    }
+    
+    100% {
+        opacity: 1;
+        transform: translate(-85%, -50%);
+    }
+}
+
+.hide-class::before {
+    display: none;
+}
+
+.battle-score {
+    cursor: pointer;
+    transform: translateY(5px);
+}
+
+.progress-bar {
+    margin-bottom: 10px;
+    width: 100%;
+    height: 12px;
+    max-width: 360px;
+    background-color: #ccc;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.player-progress, .computer-progress {
+    height: 100%;
+    transition: 500ms;
+}
+
+.player-progress {
+    background-color: #183D3D;
+    float: left;
+}
+
+.computer-progress {
+    background-color: #93B1A6;
+    float: right;
+}
+
+.restart-button{
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    width: 40px;
+    height: 40px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    background-color: #333;
+    font-size: 18px;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transform: translate(50%, -50%);
+    transition: color .2s ease-in-out;
+}
+
+.restart-button {
+    left: 0px;
+    transform: translate(-50%, -50%);
+}
+
+.restart-button:hover{
+    color: #e0dc55;
+}
+
+.new-game-button {
+    padding: 15px 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max-content;
+    color: #fff;
+    background-color: #333;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    box-shadow: 0 1px 6px #111;
+    font-size: clamp(16px, 4vw, 20px);
+    transition: 0.3s;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    animation: fadeInAndMove 1s ease-out forwards;
+    animation-delay: 1s;
+    z-index: 2;
+    opacity: 0;
+}
+
+.new-game-button:hover {
+    background-color: #555;
+}
+
+@keyframes fadeInAndMove {
+    0% {
+        transform: translate(-50%, -20%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-board {
+        grid-template-columns: repeat(3, var(--square-size-mobile));
+    }
+    .square {
+        width: var(--square-size-mobile);
+        height: var(--square-size-mobile);
+    }
+    .win-count, .progress-bar {
+        max-width: 300px;
+    }
+}

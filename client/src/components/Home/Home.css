@@ -1,0 +1,42 @@
+.Home{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100vw;
+    height: 100vh;
+    background-color: #03071e;
+}
+.VsComp,.VsUser{
+    width: 43vw;
+    height: 43vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #14213d;
+    color: #fca311;
+    flex-direction: column;
+}
+h3{
+    font-weight: 1400;
+    font-size: 1.7em;
+}
+p{
+    color:#e5e5e5;
+    font-size: large;
+}
+.Button{
+    width: 10vw;
+    height: 7vh;
+    background-color: #e5e5e5;
+    color: #fca311;
+    font-weight: bolder;
+    border: none;
+    offset: none;
+}
+.Button:hover{
+    cursor: pointer;
+    background-color: #ef233c;
+    color: #e5e5e5;
+}
+

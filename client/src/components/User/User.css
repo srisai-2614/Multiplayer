@@ -1,0 +1,50 @@
+.Users{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:space-around;
+    align-items: center;
+    background-color: #03071e;
+    color: #686e6e;
+    width: 100vw;
+    height: 100vh;
+}
+.UserButton{
+    width: 15vw;
+    height: 7vh;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: #fca311;
+    color: #fff;
+    font-weight: bolder;
+    offset: none;
+    border: none;
+    cursor: pointer;
+}
+.UserButton:hover{
+    transform: perspective(500px) translate3d(0, 0, 40px);
+    background-color: #ef233c;
+    color: #e5e5e5;
+}
+.Heading{
+    display: flex;
+    align-items:flex-start;
+    color: #fff;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 2.6em;
+    justify-content: center;
+    position: absolute;
+    top: 20%;
+    left: 45%;
+}
+.Join{
+    display: flex;
+    align-items: center;
+}
+input{
+    border: #fff ;
+    font-weight: bolder;
+    height: 7vh;
+    width: 17vw;
+    background-color: #111312;
+    color: cadetblue;
+    font-size: 1em;
+}
