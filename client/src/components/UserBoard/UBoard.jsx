@@ -1,8 +1,10 @@
+/* eslint-disable eqeqeq */
 import React, { useState, useEffect } from 'react';
 import { Board } from '../../Board';
 import io from 'socket.io-client';
 import { findWinningLine } from '../../utils/winningLines';
 import { computeGameStatus } from '../../utils/Status';
+import { useParams } from 'react-router-dom';
 
 const socket = io('http://localhost:5000', {
   transports: ['websocket'],
@@ -11,7 +13,7 @@ const socket = io('http://localhost:5000', {
 const BOARD_SIZE = 3;
 
 const TicTacToe = () => {
-  const [roomCode, setRoomCode] = useState('');
+  const { roomCode } = useParams();
   const [isNewGame, setIsNewGame] = useState(true);
   const [isXNext, setIsXNext] = useState(Math.random() < 0.5);
   const [squares, setSquares] = useState(Array.from({ length: BOARD_SIZE * BOARD_SIZE }, () => null));
@@ -19,6 +21,9 @@ const TicTacToe = () => {
   const [Player2Wins, setPlayer2Wins] = useState(0);
   const X_SYMBOL = '✗';
   const O_SYMBOL = '𝟶';
+
+  // Generate a unique user ID
+  const userId = generateUserId();
 
   const handleResetScore = () => {
     setPlayerWins(0);
@@ -43,21 +48,24 @@ const TicTacToe = () => {
     setSquares(newSquares);
     setIsXNext(shouldPlayerGoFirst);
     setIsNewGame(true);
-    socket.emit('updateBoard', newSquares);
+    socket.emit('updateBoard', newSquares, roomCode);
   };
 
   useEffect(() => {
-    socket.on('updateBoard', (updatedBoard) => {
+    socket.on('updateBoard', (updatedBoard,Code) => {
+      if(Code==roomCode){
       if (!areArraysEqual(updatedBoard, squares)) {
         setSquares(updatedBoard);
       }
-    });
+   }});
   }, [squares]);
 
   useEffect(() => {
-    socket.on('next', (data) => {
+
+    socket.on('next', (data,Code) => {
+      if (Code==roomCode){
       setIsXNext(!data);
-    });
+  }});
   }, [socket]);
 
   useEffect(() => {
@@ -66,7 +74,7 @@ const TicTacToe = () => {
       const isPlayerWinner = winnerInfo.winner === X_SYMBOL;
       updateWins(isPlayerWinner);
     }
-  }, [isXNext]);
+  }, [isXNext, squares]);
 
   const handleClick = (i) => {
     if (findWinningLine(squares) || squares[i]) {
@@ -76,14 +84,15 @@ const TicTacToe = () => {
     newSquares[i] = isXNext ? X_SYMBOL : O_SYMBOL;
     setSquares(newSquares);
     setIsXNext((prev) => !prev);
-    socket.emit('updateBoard', newSquares);
-    socket.emit('next', isXNext);
+    socket.emit('updateBoard', newSquares, roomCode);
+    socket.emit('next', isXNext, roomCode);
   };
 
   const status = computeGameStatus(squares, isXNext, X_SYMBOL, O_SYMBOL);
 
   return (
     <div className='Computer'>
+    <h3 style={{color:'#fff'}}>Room Id: {roomCode}</h3>
       <div className='ScoreIndicator'>
         <ul className='win-count'>
           <li className={`player-icon ${isXNext ? 'player-active' : ''}`}>HOST-{X_SYMBOL}</li>
@@ -127,4 +136,8 @@ function areArraysEqual(arr1, arr2) {
     }
   }
   return true;
+}
+
+function generateUserId() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }

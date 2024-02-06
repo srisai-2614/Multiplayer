@@ -11,7 +11,7 @@ function App() {
         <Route exact path='/' element={<Home/>}/>
         <Route exact path='/solo' element={<Computer/>}/>
         <Route exact path='/multi' element={<User/>}/>
-        <Route exact path='/newGame' element={<TicTacToe/>}/>  
+        <Route path='/newGame/:roomCode' element={<TicTacToe/>}/>  
       </Routes>
     </div>
   );

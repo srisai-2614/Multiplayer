@@ -1,71 +1,90 @@
 const express = require('express');
 const http = require('http');
-const {Server} = require('socket.io');
-const cors=require('cors');
-
+const { Server } = require('socket.io');
+const cors = require('cors');
 
 const app = express();
 app.use(cors());
 
-
 const server = http.createServer(app);
-const io = new Server(server,{
-  cors:{
+const io = new Server(server, {
+  cors: {
     origin: 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
-    transports : ['websocket']
-  }
+    transports: ['websocket'],
+  },
 });
-const rooms={};
-const generateRoomCode = () => {
-  return Math.floor(100000 + Math.random() * 900000);
-};
-let board = Array(9).fill(null);
-let random=Math.random()>0.5;
+const rooms = {};
+let board =  Array(3 * 3).fill(null);
+let userIdCounter = 1;
+
+function generateUserId() {
+  const userId = userIdCounter.toString();
+  userIdCounter++;
+  return userId;
+}
+
 io.on('connection', (socket) => {
+  let roomCode;
   console.log('User connected');
+  socket.on('Created', (Code) => {
+    rooms[Code] = {
+      players: [],
+      board: board,
+      currentPlayer: Math.random() > 0.5,
+    };
+    roomCode=Code;
+    socket.join(Code);
+    
+    console.log(rooms);
+  });
 
-  const roomCode = generateRoomCode();
-  socket.emit('roomCode', roomCode);
-
+  socket.on('Joined', (Code) => {
+    roomCode = Code;
+    const userId = generateUserId();
+    if (rooms[roomCode]) {
+      const index = rooms[roomCode].players.length;
+      if (index < 2) {
+        rooms[roomCode].players.push({ userId, socketId: socket.id });
+        socket.emit('Player-Joined', roomCode, userId);
+        socket.broadcast.emit('updateBoard',(rooms[Code].board,Code))
+        socket.broadcast.emit('next',(rooms[Code].currentPlayer,Code))
+        console.log('Player Joined', rooms, userId);
+      } else {
+        socket.emit('Room-full');
+        console.log('Room is full');
+      }
+    } else {
+      socket.emit('Wrong-Code');
+      console.log('Wrong Code');
+    }
+  });
+  socket.on('updateBoard', (updatedBoard, receivedRoomCode) => {   
+    console.log(updatedBoard);
+    if (receivedRoomCode && rooms[receivedRoomCode]) {
+      rooms[receivedRoomCode].board = updatedBoard;
+      console.log(rooms[receivedRoomCode].board,updatedBoard)
+      socket.broadcast.emit('updateBoard', updatedBoard,receivedRoomCode);
+    }
+  });
   
-  socket.emit('updateBoard', board);
-  socket.on('updateBoard', (updatedBoard) => {
-    board = updatedBoard;
-    socket.broadcast.emit('updateBoard', board);
-  }
-  );
-  socket.emit('next',random);
-  socket.on('next',(data)=>{
-    random=data
-    socket.broadcast.emit('next',data)
-  })
-
-  socket.on('joinRoom',(roomCode)=>{
-    if(rooms[roomCode] && rooms[roomCode].players.length <2){
-      socket.join(roomCode);
-      rooms[roomCode].players.push(socket.id);
-      socket.emit('updateBoard', rooms[roomCode].board);
-      socket.emit('next', rooms[roomCode].currentPlayer);
-      socket.to(roomCode).emit('playerJoined', socket.id);
-
-      console.log(`User joined room: ${roomCode}`);
+  socket.on('next', (data, receivedRoomCode) => {
+    if (receivedRoomCode && rooms[receivedRoomCode]) {
+      rooms[receivedRoomCode].currentPlayer = data;
+      console.log(rooms[receivedRoomCode].currentPlayer,data)
+      socket.broadcast.emit('next', data,receivedRoomCode);
     }
-    else{
-      socket.emit('roomFull');
-    }
-  })
+  });
+  
+
   socket.on('disconnect', () => {
     console.log('User disconnected');
-    for (const roomCode in rooms) {
-      const index = rooms[roomCode].players.indexOf(socket.id);
+    if (roomCode && rooms[roomCode]) {
+      const index = rooms[roomCode].players.findIndex((player) => player.socketId === socket.id);
       if (index !== -1) {
         rooms[roomCode].players.splice(index, 1);
-
-        // Broadcast to the room that a player has left
         socket.to(roomCode).emit('playerLeft', socket.id);
-
         console.log(`User left room: ${roomCode}`);
       }
     }

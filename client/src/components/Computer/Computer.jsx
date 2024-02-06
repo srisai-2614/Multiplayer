@@ -20,8 +20,8 @@ function Computer() {
   
     const X_SYMBOL ="✗";
     const O_SYMBOL = "𝟶";
-    const MIN_DELAY = 30;
-    const MAX_DELAY = 170;
+    const MIN_DELAY = 400;
+    const MAX_DELAY = 1100;
 
     const handleResetScore = () => {
       setPlayerWins(0);
@@ -62,7 +62,6 @@ function Computer() {
   const playerWinPercentage =
     totalGames === 0 ? 30 : ((playerWins / totalGames) * 100).toFixed(2);
   const computerWinPercentage = (100 - playerWinPercentage).toFixed(2);
-  
     // Function to handle clicks on the squares of the board (player's turn)
     const handleClick = (i) => {
       if (findWinningLine(squares) || squares[i]) {
